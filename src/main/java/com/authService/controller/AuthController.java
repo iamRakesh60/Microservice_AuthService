@@ -24,7 +24,7 @@ public class AuthController {
         return new ResponseEntity<>(registered, HttpStatusCode.valueOf(registered.getStatus()));
     }
 
-
+//  7no complete
 
 
 
