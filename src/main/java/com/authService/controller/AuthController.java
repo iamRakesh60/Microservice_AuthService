@@ -1,17 +1,24 @@
 package com.authService.controller;
 
 import com.authService.payload.APIResponse;
+import com.authService.payload.LoginDto;
 import com.authService.payload.UserDto;
 import com.authService.repository.UserRepository;
 import com.authService.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/auth")
 public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authManager;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -24,38 +31,31 @@ public class AuthController {
         return new ResponseEntity<>(registered, HttpStatusCode.valueOf(registered.getStatus()));
     }
 
-//  7no complete
 
+    // http://localhost:8080/api/v1/auth/login
+    @PostMapping("/login")
+    public ResponseEntity<APIResponse<String>> Login(@RequestBody LoginDto dto){
+        APIResponse<String> response = new APIResponse<>();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //http://localhost:8080/api/v1/auth/welcome
-    @GetMapping("/welcome")
-    public String welcome() {
-        return "Welcome to Auth Service";
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+        try{
+            Authentication authenticate = authManager.authenticate(token);
+            if(authenticate.isAuthenticated()){
+                response.setMessage("User Logged In Successfully!");
+                response.setStatus(200);
+                response.setData("Success");
+                return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
+            }
+        }catch (Exception e){
+            response.setMessage("Invalid Credentials!");
+            response.setStatus(500);
+            response.setData("Failed");
+            return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
+        }
+        response.setMessage("Something went wrong!");
+        response.setStatus(500);
+        response.setData("Failed");
+        return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
     }
-
-    // http://localhost:8080/api/v1/auth/hello
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello from Auth Service";
-    }
-
 }
