@@ -42,6 +42,8 @@ public class UserService {
         User user = new User();
         BeanUtils.copyProperties(userDto, user);
         user.setPassword(encryptedPassword);
+        user.setRole("ROLE_ADMIN");
+
         User savedUser = userRepository.save(user);
 
         if(savedUser == null){

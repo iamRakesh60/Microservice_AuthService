@@ -56,11 +56,15 @@ public class AppSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // disable CSRF for simplicity in APIs
+        http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(
                         req -> req.requestMatchers(PUBLIC_URLS).permitAll()
+                                .requestMatchers("/api/v1/welcome/hello").hasRole("USER")
                                 .anyRequest().authenticated()
                 ).httpBasic(withDefaults());
         return http.build();
     }
 }
+
+
+// 9th no class is running
