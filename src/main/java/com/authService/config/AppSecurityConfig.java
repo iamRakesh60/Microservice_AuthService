@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -21,6 +22,9 @@ public class AppSecurityConfig {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private JwtFilter jwtfilter;
 
     private static final String[] PUBLIC_URLS = {
             "/api/v1/welcome/welcome",
@@ -60,8 +64,11 @@ public class AppSecurityConfig {
                 .authorizeHttpRequests(
                         req -> req.requestMatchers(PUBLIC_URLS).permitAll()
                                 .requestMatchers("/api/v1/welcome/hello").hasRole("USER")
+                                .requestMatchers("/api/v1/welcome/admin").hasRole("ADMIN")
                                 .anyRequest().authenticated()
-                ).httpBasic(withDefaults());
+                ).authenticationProvider(authProvider())
+                .addFilterBefore(jwtfilter, UsernamePasswordAuthenticationFilter.class);
+                //.httpBasic(withDefaults());
         return http.build();
     }
 }
