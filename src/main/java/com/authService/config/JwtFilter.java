@@ -9,14 +9,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
+
 
     @Autowired
     private JWTService jwtService;
@@ -33,6 +38,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if(authHeader != null && authHeader.startsWith("Bearer ")){
             String jwt = authHeader.substring(7);
+            log.info("Jwt Token verify in Auth service");
             String userName = jwtService.validateTokenAndRetriveSubject(jwt);
             if(userName != null && SecurityContextHolder.getContext().getAuthentication() == null){
                 var userDetails = userDetailsService.loadUserByUsername(userName);
