@@ -1,5 +1,6 @@
 package com.authService.controller;
 
+import com.authService.entity.User;
 import com.authService.payload.APIResponse;
 import com.authService.payload.LoginDto;
 import com.authService.payload.UserDto;
@@ -65,5 +66,12 @@ public class AuthController {
         response.setStatus(500);
         response.setData("Failed");
         return new ResponseEntity<>(response, HttpStatusCode.valueOf(response.getStatus()));
+    }
+
+    @GetMapping("/get-user")
+    // http://localhost:8080/api/v1/auth/get-user?name=admin
+    public User getUserName(@RequestParam String username){
+        User byUsername = userRepository.findByUsername(username);
+        return byUsername;
     }
 }

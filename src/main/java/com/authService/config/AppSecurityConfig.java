@@ -30,6 +30,7 @@ public class AppSecurityConfig {
             "/api/v1/welcome/welcome",
             "/api/v1/auth/register",
             "/api/v1/auth/login",
+            "/api/v1/auth/get-user",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
