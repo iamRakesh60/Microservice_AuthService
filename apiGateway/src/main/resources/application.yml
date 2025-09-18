@@ -1,0 +1,49 @@
+server:
+  port: 5555   # Gateway port
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true   # makes service IDs lowercase in URLs
+
+          routes:
+            # Auth Service
+            - id: auth-service
+              uri: lb://authservice
+              predicates:
+                - Path=/auth1/**
+              filters:
+                - RewritePath=/auth1/(?<segment>.*), /${segment}
+
+            # Microservice-1
+            - id: microservice-1
+              uri: lb://microservice-1
+              predicates:
+                - Path=/micro1/**
+              filters:
+                - RewritePath=/micro1/(?<segment>.*), /${segment}
+
+            # Example: Payment Service
+            # - id: payment-service
+            #   uri: lb://payment-service
+            #   predicates:
+            #     - Path=/payment/**
+            #   filters:
+            #     - RewritePath=/payment/(?<segment>.*), /${segment}
+            #     - name: Retry
+            #       args:
+            #         retries: 3
+            #         statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
